@@ -84,6 +84,8 @@ enum Subcommands {
     //
     #[clap(about = "Generate shell completions script")]
     Completions(Completions),
+    #[clap(about = "Import an account from cairo-lang")]
+    CairolangImport(CairolangImport),
 }
 
 #[tokio::main]
@@ -120,5 +122,6 @@ async fn run_command(cli: Cli) -> Result<()> {
         Subcommands::Declare(cmd) => cmd.run().await,
         Subcommands::Deploy(cmd) => cmd.run().await,
         Subcommands::Completions(cmd) => cmd.run(),
+        Subcommands::CairolangImport(cmd) => cmd.run().await,
     }
 }

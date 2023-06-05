@@ -1,11 +1,15 @@
 use anyhow::Result;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use starknet::{
     core::{
-        serde::unsigned_field_element::UfeHex, types::FieldElement, utils::get_contract_address,
+        serde::unsigned_field_element::UfeHex,
+        types::{BlockId, BlockTag, FieldElement, FunctionCall},
+        utils::get_contract_address,
     },
-    macros::felt,
+    macros::{felt, selector},
+    providers::{AnyProvider, Provider},
 };
 
 pub const KNOWN_ACCOUNT_CLASSES: [KnownAccountClass; 1] = [KnownAccountClass {
@@ -84,6 +88,58 @@ impl AccountConfig {
                 &[oz.public_key],
                 FieldElement::ZERO,
             )),
+        }
+    }
+
+    /// Fetches account config from an already deployed account contract.
+    pub async fn fetch(address: &str, provider: &AnyProvider) -> Result<Self, anyhow::Error> {
+        let address = FieldElement::from_hex_be(address)?;
+
+        let class_hash = provider
+            .get_class_hash_at(BlockId::Tag(BlockTag::Pending), address)
+            .await?;
+
+        let known_class = match KNOWN_ACCOUNT_CLASSES
+            .iter()
+            .find(|class| class.class_hash == class_hash)
+        {
+            Some(class) => class,
+            None => {
+                eprintln!(
+                    "{} is not a known account class hash. \
+                     If you believe this is a bug, submit a PR to:",
+                    format!("{:#064x}", class_hash).bright_yellow()
+                );
+                eprintln!("    https://github.com/xJonathanLEI/starkli");
+                anyhow::bail!("unknown class hash: {:#064x}", class_hash);
+            }
+        };
+
+        match known_class.variant {
+            AccountVariantType::OpenZeppelin => {
+                let public_key = provider
+                    .call(
+                        FunctionCall {
+                            contract_address: address,
+                            entry_point_selector: selector!("getPublicKey"),
+                            calldata: vec![],
+                        },
+                        BlockId::Tag(BlockTag::Pending),
+                    )
+                    .await?[0];
+
+                Ok(AccountConfig {
+                    version: 1,
+                    variant: AccountVariant::OpenZeppelin(OzAccountConfig {
+                        version: 1,
+                        public_key,
+                    }),
+                    deployment: DeploymentStatus::Deployed(DeployedStatus {
+                        class_hash,
+                        address,
+                    }),
+                })
+            }
         }
     }
 }

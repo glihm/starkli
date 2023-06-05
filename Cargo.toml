@@ -19,6 +19,7 @@ rpassword = "7.2.0"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = { version = "1.0.96", features = ["preserve_order"] }
 serde_with = "2.3.2"
+shellexpand = "3.1.0"
 starknet = { git = "https://github.com/xJonathanLEI/starknet-rs" }
 tokio = { version = "1.28.1", default-features = false, features = ["macros", "rt-multi-thread"] }
 url = "2.3.1"
