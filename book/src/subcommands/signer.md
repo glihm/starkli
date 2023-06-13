@@ -1,6 +1,6 @@
-# Wallet
+# Signer
 
-A wallet is a software managing cryptographic keys associated to a blockchain
+A signer is a software managing cryptographic keys associated to a blockchain
 user. A user has to sign transactions in order to interact with the blockchain.
 
 Starkli proposes two ways to interact with the key pair:
@@ -29,7 +29,7 @@ as the private key inside the keystore file is encrypted.
 ### new
 Randomly generate a new keystore.
 
-`starkli wallet keystore new ~/.keystore/key_1`
+`starkli signer keystore new ~/.keystore/key_1`
 
 In the example above, strakli will create `key_1` **if it doesn't exist**.
 However, starkli **will not** create the `~/.keystore` directory automatically.
@@ -57,7 +57,7 @@ your private key. It's important to note that the public key can be
 computed from the private key. So, importing the private key will automatically
 add the public key.
 
-`starkli wallet keystore from-key ~/.keystore/imported_key_1`
+`starkli signer keystore from-key ~/.keystore/imported_key_1`
 
 You will then be prompted to enter the private key and a new passphrase.
 Note that the passphrase can be totally different from the passphrase
@@ -75,7 +75,7 @@ Check the public key of an existing keystore file.
 
 Prints to the screen the public key in the given keystore file.
 
-`starkli wallet keystore inspect ~/.keystore/key_1`
+`starkli signer keystore inspect ~/.keystore/key_1`
 
 You will be prompted to enter your passphrase, and the public key will be
 displayed.
@@ -88,10 +88,10 @@ Public key: 0x048cb21c13975711aae42cb20dfba9c20e5ff70f0429b55d35c79e2f8e8d5cf9
 ### inspect-private
 Check the private key of an existing keystore file.
 
-`starkli wallet keystore inspect-private ~/.keystore/key_1`
+`starkli signer keystore inspect-private ~/.keystore/key_1`
 
 As mentioned earlier, the private key is encrypted. Without your passphrase
-the wallet software can't decrypt your private key.
+the signer software can't decrypt your private key.
 
 ```bash
 Enter password: 

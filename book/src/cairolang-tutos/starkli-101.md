@@ -1,10 +1,11 @@
-# Tutorial cairo-lang to Starkli
+# Starkli 101
 
-In this tutorial, you will be guided through two steps:
+In this tutorial, you will be guided from scratch to deploy contracts on Starknet.
 
-1. How to import your existing keys from cairo-lang to starkli.
-2. Starkli 101 with a tutorial to interact with the blockchain.
-
+1. Preparing your cryptographic keys and account.
+2. How to compile your Cairo contract with a simple contract example.
+3. Declaring a new contract class on Starknet.
+4. Deploying an instance of a contract on Starknet.
 
 ## Prepare an account
 
@@ -14,7 +15,7 @@ This tutorial assumes that you have no wallet and no account setup.
 You may want to check [cairolang-import](../subcommands/cairolang-import.md)
 if you already have an account used with cairo-lang previously.
 
-1. First, you need a pair of cryptographic keys.
+### First, you need a pair of cryptographic keys.
 
 ```bash
 starkli signer keystore new ./key_1
@@ -22,19 +23,19 @@ starkli signer keystore new ./key_1
 
 For more details about wallet and keys, please refere to [signer section](../subcommands/signer.md).
 
-2. Then, this key can be used to initialize an account. Take a moment to note the address
+Then, this key can be used to initialize an account. Take a moment to note the address
 of your account upon deploy, outputed by Starkli.
 
 ```bash
 starkli account oz init --keystore ./key_1 account_1
 ```
 
-3. Once the account is initialized (still local for now), you must pre-fund this account.
+### Once the account is initialized (still local for now), you must pre-fund this account.
 To pre-fund, you have several options, but the easiest is to pick-up one of Starknet wallet (ArgentX or Braavos), and from
 those wallets you can send funds to the address Starkli gave you at the previous command. If you want to have an estimate
 of the gas fees to deploy your account, run the next step.
 
-4. To deploy the account, simply run:
+### To deploy the account, simply run:
 ```
 starkli account deploy account_1 --keystore ./key_1
 ```
@@ -42,7 +43,6 @@ starkli account deploy account_1 --keystore ./key_1
 The prompt will be blocked to ensure that you press ENTER when your pre-fund transaction is validated.
 Once you press ENTER, Starkli will show you the transaction hash related to your account deployment and will
 track the progress of the transaction.
-
 
 You are then all set, your cryptographic keys are generated and encrypted locally with your password.
 And your account is deployed on-chain, meaning that you can now start sending transaction!
@@ -87,7 +87,7 @@ mod Contract1 {
 }
 ```
 
-Let's give a simple example with only docker required using the cairo compiler and docker:
+Let's give an example with only docker required on your machine:
 
 ```
 sudo docker run --rm -it -v $(pwd):/cairo --entrypoint starknet-compile starknet/cairo:1.1.0 /cairo/contract1.cairo /cairo/contract1.json --replace-ids
@@ -107,7 +107,7 @@ This will output the class hash of your compiled contract.
 
 ## Declare the new class
 
-When you develop your own contract, you are generated a new class hash as mentioned earlier.
+When you develop your own contract, you are generating a new class hash as mentioned earlier.
 For this reason, you have to declare the new contract class in order to Starknet
 to store the code associated with your contract.
 
@@ -150,3 +150,4 @@ And once it's confirmed, you'll be able to interact with this contract using it'
 [starkscan](https://testnet.starkscan.co/contract/0x05866804a5088134cf4110fe2bf8985e15443667e8d38733a5f4e48cf3277724#read-write-contract)
 or
 [voyager](https://goerli.voyager.online/contract/0x05866804a5088134cf4110fe2Bf8985E15443667E8d38733a5F4E48CF3277724#readContract).
+

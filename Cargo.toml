@@ -23,7 +23,3 @@ serde_with = "2.3.3"
 starknet = "0.3.0"
 tokio = { version = "1.28.2", default-features = false, features = ["macros", "rt-multi-thread"] }
 url = "2.4.0"
-shellexpand = "3.1.0"
-
-
-

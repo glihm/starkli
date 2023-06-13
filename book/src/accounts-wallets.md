@@ -1,10 +1,10 @@
-# Accounts and wallets
+# Accounts and Signer
 
-Starkli makes a neat separation between accounts and wallets.
+Starkli makes a neat separation between accounts and signer.
 
-## Wallet
+## Signer
 
-A wallet, refers to a software or a physical device used to store and manage
+A signer (or wallet), refers to a software or a physical device used to store and manage
 user's cryptographic keys, and the private key particularly. In fact, this private key
 is used to sign transactions and thus interact with the blockchain.  
 
@@ -23,7 +23,7 @@ command providing the `keystore` file as argument.
 For this reason, starkli is not assuming any default keystore
 file (yet?), and you must provide it explicitly at each command.
 
-See [wallet subcommands](subcommands/wallet.md).
+See [signer subcommands](subcommands/signer.md).
 
 
 ---

@@ -6,8 +6,7 @@
 - [Accounts and wallet](./accounts-wallets.md)
 
 # Tutorials 
-- [Tutorial cairo-lang to Starkli](./cairolang-tutos/cairolang-to-starkli.md)
-  - [Import keys from cairo-lang](./cairolang-tutos/cairolang-import.md)
+- [Starkli 101](./cairolang-tutos/starkli-101.md)
 
 # Subcommands 
 
@@ -18,5 +17,5 @@
   - [parse-cairo-string](./subcommands/parse-cairo-string.md)
   - [mont](./subcommands/mont.md)
   - [account](./subcommands/account.md)
-  - [wallet](./subcommands/wallet.md)
+  - [signer](./subcommands/signer.md)
   - [cairolang-import](./subcommands/cairolang-import.md)
