@@ -61,7 +61,7 @@ To compile cairo contract you have several options:
 A simple contract to compile:
 
 ```rust
-// ** contract 1 **                                                                                                                                                
+// ** contract 1 **
 
 #[contract]
 mod Contract1 {
@@ -70,14 +70,11 @@ mod Contract1 {
         _name: felt252,
     }
 
-    #[event]
-    fn StarkliGreeting(name: felt252) {}
-
     #[constructor]
     fn constructor(name: felt252) {
         _name::write(name);
     }
-                                                                                                                                                                   
+
     #[view]
     fn name_get() -> felt252 {
         let n = _name::read();
