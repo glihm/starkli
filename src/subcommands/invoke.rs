@@ -4,8 +4,9 @@ use anyhow::Result;
 use clap::Parser;
 use colored::Colorize;
 use starknet::{
-    accounts::SingleOwnerAccount, contract::ContractFactory, core::types::FieldElement,
-    providers::Provider, signers::SigningKey,
+    accounts::{Account, Call, SingleOwnerAccount},
+    core::{types::FieldElement, utils::get_selector_from_name},
+    providers::Provider,
 };
 
 use crate::{
@@ -18,13 +19,11 @@ use crate::{
 };
 
 #[derive(Debug, Parser)]
-pub struct Deploy {
+pub struct Invoke {
     #[clap(flatten)]
     provider: ProviderArgs,
     #[clap(flatten)]
     signer: SignerArgs,
-    #[clap(long, help = "Do not derive contract address from deployer address")]
-    not_unique: bool,
     #[clap(
         long,
         env = "STARKNET_ACCOUNT",
@@ -38,13 +37,11 @@ pub struct Deploy {
     estimate_only: bool,
     #[clap(long, help = "Wait for the transaction to confirm")]
     watch: bool,
-    #[clap(help = "Class hash")]
-    class_hash: String,
-    #[clap(help = "Raw constructor arguments")]
-    ctor_args: Vec<String>,
+    #[clap(help = "One or more contract calls. See documentation for more details")]
+    calls: Vec<String>,
 }
 
-impl Deploy {
+impl Invoke {
     pub async fn run(self) -> Result<()> {
         let provider = Arc::new(self.provider.into_provider());
         let felt_decoder = FeltDecoder::new(AddressBookResolver::new(provider.clone()));
@@ -54,14 +51,43 @@ impl Deploy {
             anyhow::bail!("account config file not found");
         }
 
-        let class_hash = FieldElement::from_hex_be(&self.class_hash)?;
-        let mut ctor_args = vec![];
-        for element in self.ctor_args.iter() {
-            ctor_args.push(felt_decoder.decode(element).await?);
-        }
+        // Parses and resolves the calls
+        let calls = {
+            // TODO: show more helpful message
+            let unexpected_end_of_args = || anyhow::anyhow!("unexpected end of arguments");
 
-        // TODO: add option for manually setting salt
-        let salt = SigningKey::from_random().secret_scalar();
+            let mut buffer = vec![];
+
+            let mut arg_iter = self.calls.into_iter();
+
+            while let Some(first_arg) = arg_iter.next() {
+                let contract_address = felt_decoder.decode(&first_arg).await?;
+
+                let next_arg = arg_iter.next().ok_or_else(unexpected_end_of_args)?;
+                let selector = get_selector_from_name(&next_arg)?;
+
+                let mut calldata = vec![];
+                for arg in &mut arg_iter {
+                    let arg = match arg.as_str() {
+                        "/" | "-" | "\\" => break,
+                        _ => felt_decoder.decode(&arg).await?,
+                    };
+                    calldata.push(arg);
+                }
+
+                buffer.push(Call {
+                    to: contract_address,
+                    selector,
+                    calldata,
+                });
+            }
+
+            buffer
+        };
+
+        if calls.is_empty() {
+            anyhow::bail!("empty execution");
+        }
 
         // TODO: refactor account & signer loading
 
@@ -75,19 +101,13 @@ impl Deploy {
 
         let chain_id = provider.chain_id().await?;
 
-        let account =
-            SingleOwnerAccount::new(provider.clone(), signer.clone(), account_address, chain_id);
+        let account = SingleOwnerAccount::new(provider.clone(), signer, account_address, chain_id);
 
-        // TODO: allow custom UDC
-        let factory = ContractFactory::new(class_hash, account);
+        let execution = account.execute(calls).fee_estimate_multiplier(1.5f64);
 
-        // TODO: pre-compute and show target deployment address
-
-        let contract_deployment = factory.deploy(&ctor_args, salt, !self.not_unique);
-
-        // TODO: add option for manually specifying fees
-        let estimated_fee = contract_deployment.estimate_fee().await?.overall_fee;
         if self.estimate_only {
+            let estimated_fee = execution.estimate_fee().await?.overall_fee;
+
             println!(
                 "{} ETH",
                 format!(
@@ -100,30 +120,18 @@ impl Deploy {
         }
 
         // TODO: make buffer configurable
-        let estimated_fee_with_buffer = estimated_fee * 3 / 2;
-
+        let invoke_tx = execution.send().await?.transaction_hash;
         eprintln!(
-            "Deploying class {} with salt {}...",
-            format!("{:#064x}", class_hash).bright_yellow(),
-            format!("{:#064x}", salt).bright_yellow()
-        );
-
-        let deployment_tx = contract_deployment
-            .max_fee(estimated_fee_with_buffer.into())
-            .send()
-            .await?
-            .transaction_hash;
-        eprintln!(
-            "Contract deployment transaction: {}",
-            format!("{:#064x}", deployment_tx).bright_yellow()
+            "Invoke transaction: {}",
+            format!("{:#064x}", invoke_tx).bright_yellow()
         );
 
         if self.watch {
             eprintln!(
                 "Waiting for transaction {} to confirm...",
-                format!("{:#064x}", deployment_tx).bright_yellow(),
+                format!("{:#064x}", invoke_tx).bright_yellow(),
             );
-            watch_tx(&provider, deployment_tx).await?;
+            watch_tx(&provider, invoke_tx).await?;
         }
 
         Ok(())

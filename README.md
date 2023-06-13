@@ -28,6 +28,7 @@ Commands:
   to-cairo-string      Encode string into felt with the Cairo short string representation
   parse-cairo-string   Decode string from felt with the Cairo short string representation
   mont                 Print the montgomery representation of a field element
+  call                 Call contract functions without sending transactions
   transaction          Get Starknet transaction by hash
   block-number         Get latest block number
   block-hash           Get latest block hash
@@ -44,6 +45,7 @@ Commands:
   syncing              Get node syncing status
   signer               Signer management commands
   account              Account management commands
+  invoke               Send an invoke transaction from an account contract
   declare              Declare a contract class
   deploy               Deploy contract via the Universal Deployer Contract
   completions          Generate shell completions script

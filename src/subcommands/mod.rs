@@ -72,3 +72,9 @@ pub use declare::Declare;
 
 mod cairolang_import;
 pub use cairolang_import::CairolangImport;
+
+mod call;
+pub use call::Call;
+
+mod invoke;
+pub use invoke::Invoke;

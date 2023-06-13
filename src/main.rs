@@ -5,7 +5,11 @@ use colored::Colorize;
 use crate::{provider::ProviderArgs, subcommands::*};
 
 mod account;
+mod address_book;
+mod chain_id;
+mod decode;
 mod provider;
+mod signer;
 mod subcommands;
 mod utils;
 
@@ -34,6 +38,8 @@ enum Subcommands {
     //
     // JSON-RPC query client
     //
+    #[clap(about = "Call contract functions without sending transactions")]
+    Call(Call),
     #[clap(alias = "tx", about = "Get Starknet transaction by hash")]
     Transaction(Transaction),
     #[clap(about = "Get latest block number")]
@@ -75,6 +81,8 @@ enum Subcommands {
     //
     // Sending out transactions
     //
+    #[clap(about = "Send an invoke transaction from an account contract")]
+    Invoke(Invoke),
     #[clap(about = "Declare a contract class")]
     Declare(Declare),
     #[clap(about = "Deploy contract via the Universal Deployer Contract")]
@@ -103,6 +111,7 @@ async fn run_command(cli: Cli) -> Result<()> {
         Subcommands::ToCairoString(cmd) => cmd.run(),
         Subcommands::ParseCairoString(cmd) => cmd.run(),
         Subcommands::Mont(cmd) => cmd.run(),
+        Subcommands::Call(cmd) => cmd.run().await,
         Subcommands::Transaction(cmd) => cmd.run().await,
         Subcommands::BlockNumber(cmd) => cmd.run().await,
         Subcommands::BlockHash(cmd) => cmd.run().await,
@@ -119,6 +128,7 @@ async fn run_command(cli: Cli) -> Result<()> {
         Subcommands::Syncing(cmd) => cmd.run().await,
         Subcommands::Signer(cmd) => cmd.run(),
         Subcommands::Account(cmd) => cmd.run().await,
+        Subcommands::Invoke(cmd) => cmd.run().await,
         Subcommands::Declare(cmd) => cmd.run().await,
         Subcommands::Deploy(cmd) => cmd.run().await,
         Subcommands::Completions(cmd) => cmd.run(),

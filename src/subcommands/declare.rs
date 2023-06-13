@@ -5,13 +5,16 @@ use clap::Parser;
 use colored::Colorize;
 use starknet::{
     accounts::{Account, SingleOwnerAccount},
-    core::types::contract::{legacy::LegacyContractClass, CompiledClass, SierraClass},
+    core::types::{
+        contract::{legacy::LegacyContractClass, CompiledClass, SierraClass},
+        FieldElement,
+    },
     providers::Provider,
-    signers::{LocalWallet, SigningKey},
 };
 
 use crate::{
     account::{AccountConfig, DeploymentStatus},
+    signer::SignerArgs,
     utils::watch_tx,
     ProviderArgs,
 };
@@ -20,15 +23,19 @@ use crate::{
 pub struct Declare {
     #[clap(flatten)]
     provider: ProviderArgs,
-    #[clap(long, help = "Path to keystore JSON file")]
-    keystore: PathBuf,
+    #[clap(flatten)]
+    signer: SignerArgs,
     #[clap(
         long,
-        help = "Supply keystore password from command line option instead of prompt"
+        env = "STARKNET_ACCOUNT",
+        help = "Path to account config JSON file"
     )]
-    keystore_password: Option<String>,
-    #[clap(long, help = "Path to account config JSON file")]
     account: PathBuf,
+    #[clap(
+        long,
+        help = "Only estimate transaction fee without sending transaction"
+    )]
+    estimate_only: bool,
     #[clap(long, help = "Wait for the transaction to confirm")]
     watch: bool,
     #[clap(help = "Path to contract artifact file")]
@@ -37,20 +44,8 @@ pub struct Declare {
 
 impl Declare {
     pub async fn run(self) -> Result<()> {
-        if self.keystore_password.is_some() {
-            eprintln!(
-                "{}",
-                "WARNING: setting keystore passwords via --password is generally considered \
-                insecure, as they will be stored in your shell history or other log files."
-                    .bright_magenta()
-            );
-        }
-
         let provider = Arc::new(self.provider.into_provider());
-
-        if !self.keystore.exists() {
-            anyhow::bail!("keystore file not found");
-        }
+        let signer = self.signer.into_signer()?;
 
         if !self.account.exists() {
             anyhow::bail!("account config file not found");
@@ -64,22 +59,9 @@ impl Declare {
             DeploymentStatus::Deployed(inner) => inner.address,
         };
 
-        let password = if let Some(password) = self.keystore_password {
-            password
-        } else {
-            rpassword::prompt_password("Enter keystore password: ")?
-        };
-
-        let key = SigningKey::from_keystore(self.keystore, &password)?;
-
         let chain_id = provider.chain_id().await?;
 
-        let account = SingleOwnerAccount::new(
-            provider.clone(),
-            LocalWallet::from_signing_key(key.clone()),
-            account_address,
-            chain_id,
-        );
+        let account = SingleOwnerAccount::new(provider.clone(), signer, account_address, chain_id);
 
         // TODO: check if class has already been declared
 
@@ -93,11 +75,13 @@ impl Declare {
             // Declaring Cairo 1 class
             let class_hash = class.class_hash()?;
 
-            eprintln!(
-                "Declaring Cairo 1 class: {}",
-                format!("{:#064x}", class_hash).bright_yellow()
-            );
-            eprintln!("Compiling Sierra class to CASM with compiler version v1.1.0...");
+            if !self.estimate_only {
+                eprintln!(
+                    "Declaring Cairo 1 class: {}",
+                    format!("{:#064x}", class_hash).bright_yellow()
+                );
+                eprintln!("Compiling Sierra class to CASM with compiler version v1.1.0...");
+            }
 
             // Code adapted from the `starknet-sierra-compile` CLI
 
@@ -122,15 +106,31 @@ impl Declare {
 
             let casm_class_hash = casm_class.class_hash()?;
 
-            eprintln!(
-                "CASM class hash: {}",
-                format!("{:#064x}", casm_class_hash).bright_yellow()
-            );
+            if !self.estimate_only {
+                eprintln!(
+                    "CASM class hash: {}",
+                    format!("{:#064x}", casm_class_hash).bright_yellow()
+                );
+            }
 
             // TODO: make buffer configurable
             let declaration = account
                 .declare(Arc::new(class.flatten()?), casm_class_hash)
                 .fee_estimate_multiplier(1.5f64);
+
+            if self.estimate_only {
+                let estimated_fee = declaration.estimate_fee().await?.overall_fee;
+
+                println!(
+                    "{} ETH",
+                    format!(
+                        "{}",
+                        <u64 as Into<FieldElement>>::into(estimated_fee).to_big_decimal(18)
+                    )
+                    .bright_yellow(),
+                );
+                return Ok(());
+            }
 
             (class_hash, declaration.send().await?.transaction_hash)
         } else if let Ok(_) =
@@ -144,15 +144,31 @@ impl Declare {
             // Declaring Cairo 0 class
             let class_hash = class.class_hash()?;
 
-            eprintln!(
-                "Declaring Cairo 0 (deprecated) class: {}",
-                format!("{:#064x}", class_hash).bright_yellow()
-            );
+            if !self.estimate_only {
+                eprintln!(
+                    "Declaring Cairo 0 (deprecated) class: {}",
+                    format!("{:#064x}", class_hash).bright_yellow()
+                );
+            }
 
             // TODO: make buffer configurable
             let declaration = account
                 .declare_legacy(Arc::new(class))
                 .fee_estimate_multiplier(1.5f64);
+
+            if self.estimate_only {
+                let estimated_fee = declaration.estimate_fee().await?.overall_fee;
+
+                println!(
+                    "{} ETH",
+                    format!(
+                        "{}",
+                        <u64 as Into<FieldElement>>::into(estimated_fee).to_big_decimal(18)
+                    )
+                    .bright_yellow(),
+                );
+                return Ok(());
+            }
 
             (class_hash, declaration.send().await?.transaction_hash)
         } else {

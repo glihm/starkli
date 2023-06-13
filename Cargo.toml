@@ -8,6 +8,10 @@ description = "Starkli (/ˈstɑːrklaɪ/), a blazing fast CLI tool for Starknet 
 
 [dependencies]
 anyhow = "1.0.71"
+<<<<<<< HEAD
+=======
+async-trait = "0.1.68"
+>>>>>>> jo/master
 cairo-lang-starknet = "=1.1.0"
 chrono = "0.4.26"
 clap = { version = "4.3.3", features = ["derive", "env"] }
@@ -21,5 +25,6 @@ serde_json = { version = "1.0.96", features = ["preserve_order"] }
 shellexpand = "3.1.0"
 serde_with = "2.3.3"
 starknet = "0.3.0"
+thiserror = "1.0.40"
 tokio = { version = "1.28.2", default-features = false, features = ["macros", "rt-multi-thread"] }
 url = "2.4.0"
