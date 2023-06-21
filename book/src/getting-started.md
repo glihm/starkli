@@ -58,7 +58,7 @@ $ starkli chain-id --network goerli-1
 ```
 
 
-## Explicit accounts and wallets
+## Explicit accounts and wallets (signers)
 
 As detailed in the [accounts and wallet chapter](./accounts-wallets.md),
 Starkli makes a clear distinction between accounts contracts and wallets.
@@ -69,11 +69,7 @@ explicit path to the corresponding file.
 This is up to you to write some scripts combined to environment variables
 to automatize / facilitate the use of those files.
 
-Some examples:
-
-Inspects the public key of a given keystore file.  
-`$ starkli wallet keystore inspect ~/.keystore/key_1`
-
-Fetches an account contracts configuration from the blockchain,
-storing the configuration into the `account_1` file.  
-`$ starkli account fetch --output ~/.accounts/account_1 0x1234`
+If you have a local account used with `cairo-lang` which was the previous
+command line in python from Starkware, please take a look at
+[cairolang-import](./subcommands/cairolang-import.md)
+to easily import your account to Starkli in one command.
