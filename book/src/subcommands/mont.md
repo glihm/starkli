@@ -3,7 +3,7 @@
 Print the montgomery representation of a field element.
 
 ```bash
-starkli mont 0x123
+$ starkli mont 0x123
 
 [
     18446744073709542305,

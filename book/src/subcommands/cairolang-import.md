@@ -23,10 +23,10 @@ As in `cairo-lang`, ensure your [network environment](../getting-started.md#inte
 starknet new_account --account account_1
 
 # You can then run this with Starkli
-starkli cairolang-import \
-    --keystore-file ~/.keystore/key_1 \
-    --account-file ~/.account/account_1 \
-    account_1
+$ starkli cairolang-import \
+          --keystore-file ~/.keystore/key_1 \
+          --account-file ~/.account/account_1 \
+          account_1
 ```
 
 If you did not use the default path to store you account configuration when working
@@ -38,11 +38,11 @@ of your file.
 starknet new_account --account account_2 --account_dir /my/path
 
 # You can then run this with Starkli
-starkli cairolang-import \
-    --keystore-file ~/.keystore/key_1 \
-    --account-file ~/.account/account_1 \
-    --cairolang-file /my/path/starknet_open_zeppelin_accounts.json \
-    account_2
+$ starkli cairolang-import \
+          --keystore-file ~/.keystore/key_1 \
+          --account-file ~/.account/account_1 \
+          --cairolang-file /my/path/starknet_open_zeppelin_accounts.json \
+          account_2
 ```
 
 Finally, if you want to overwrite the keystore and account config file if they already exist,

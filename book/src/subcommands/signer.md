@@ -75,7 +75,9 @@ Check the public key of an existing keystore file.
 
 Prints to the screen the public key in the given keystore file.
 
-`starkli signer keystore inspect ~/.keystore/key_1`
+```bash
+$ starkli signer keystore inspect ~/.keystore/key_1
+```
 
 You will be prompted to enter your passphrase, and the public key will be
 displayed.
@@ -88,7 +90,9 @@ Public key: 0x048cb21c13975711aae42cb20dfba9c20e5ff70f0429b55d35c79e2f8e8d5cf9
 ### inspect-private
 Check the private key of an existing keystore file.
 
-`starkli signer keystore inspect-private ~/.keystore/key_1`
+```bash
+$ starkli signer keystore inspect-private ~/.keystore/key_1
+```
 
 As mentioned earlier, the private key is encrypted. Without your passphrase
 the signer software can't decrypt your private key.
@@ -105,8 +109,8 @@ Randomly generate a new key pair.
 With this raw approach, the key pair is displayed on the screen.
 
 ```bash
-starkli wallet gen-keypair
+$ starkli signer gen-keypair
 
 Private key : 0x07d76232672f820687bc3b5524120f60bd58bced07bb4265273e0e05f2e0c464
-Public key  : 0x0051327fb5c1e0cb8fb25cb1f17f53012c9e985ae10fa08ecc5e1ca034eeda4f
+Public key  : 0x005...........................................................2f
 ```

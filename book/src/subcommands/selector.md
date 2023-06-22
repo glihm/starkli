@@ -9,6 +9,7 @@ https://docs.starknet.io/documentation/architecture_and_concepts/Hashing/hash-fu
 hash of the function name, encoded in ASCII.
 
 ```bash
-starkli selector my_func
+$ starkli selector my_func
+
 0x0084829ac21528acb5aa5ddebd65c58d9738238cabb243f35da83e7ba516c480
 ```

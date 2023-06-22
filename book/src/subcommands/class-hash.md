@@ -6,9 +6,8 @@ The [class-hash][strkdocs_classhash] is computed on Cairo contract already
 compiled.
 
 ```bash
-starknet-compile contract.cairo contract.json --replace-ids
+$ starkli class-hash contract1.json
 
-starkli class-hash contract.json
 0x01a6c0d40029b4c2bb780c15751e38972a4338f0ab2bdd1caeb8e023a7960784
 ```
 

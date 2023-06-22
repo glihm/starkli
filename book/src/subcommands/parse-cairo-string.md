@@ -3,7 +3,8 @@
 Decode string from felt with the Cairo short string representation.
 
 ```bash
-starkli parse-cairo-string 0x737461726b6e6574
+$ starkli parse-cairo-string 0x737461726b6e6574
+
 starknet
 ```
 

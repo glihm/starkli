@@ -6,7 +6,9 @@ Account management commands.
 
 Fetch account config from an already deployed account contract.
 
-`starkli account fetch --rpc <RPC> --output <OUTPUT> <ADDRESS>`
+```bash
+$ starkli account fetch --rpc <RPC> --output <OUTPUT> <ADDRESS>
+```
 
 > TODO: add example from already deployed contract.
 
