@@ -12,10 +12,17 @@ use starknet::{
     providers::{AnyProvider, Provider},
 };
 
-pub const KNOWN_ACCOUNT_CLASSES: [KnownAccountClass; 1] = [KnownAccountClass {
+pub const KNOWN_ACCOUNT_CLASSES: [KnownAccountClass; 2] = [KnownAccountClass {
     class_hash: felt!("0x048dd59fabc729a5db3afdf649ecaf388e931647ab2f53ca3c6183fa480aa292"),
     variant: AccountVariantType::OpenZeppelin,
-}];
+},
+
+KnownAccountClass {
+    class_hash: felt!("0x006ea5324f5d3f919a7ff007acfad6c421d724cf0cbcf0f6105945565518a572"),
+    variant: AccountVariantType::OpenZeppelin,
+},
+
+];
 
 #[derive(Serialize, Deserialize)]
 pub struct AccountConfig {
