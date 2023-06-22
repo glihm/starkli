@@ -24,8 +24,8 @@ starknet new_account --account account_1
 
 # You can then run this with Starkli
 $ starkli cairolang-import \
-          --keystore-file ~/.keystore/key_1 \
-          --account-file ~/.account/account_1 \
+          --keystore-file ~/.keystore/key_1.json \
+          --account-file ~/.account/account_1.json \
           account_1
 ```
 
@@ -39,8 +39,8 @@ starknet new_account --account account_2 --account_dir /my/path
 
 # You can then run this with Starkli
 $ starkli cairolang-import \
-          --keystore-file ~/.keystore/key_1 \
-          --account-file ~/.account/account_1 \
+          --keystore-file ~/.keystore/key_2.json \
+          --account-file ~/.account/account_2.json \
           --cairolang-file /my/path/starknet_open_zeppelin_accounts.json \
           account_2
 ```

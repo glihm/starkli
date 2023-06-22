@@ -18,7 +18,7 @@ if you already have an account used with cairo-lang previously.
 ### First, you need a pair of cryptographic keys.
 
 ```bash
-$ starkli signer keystore new ./key_1
+$ starkli signer keystore new key_1.json
 ```
 
 For more details about wallet and keys, please refere to [signer section](../subcommands/signer.md).
@@ -27,7 +27,7 @@ Then, this key can be used to initialize an account. Take a moment to note the a
 of your account upon deploy, outputed by Starkli.
 
 ```bash
-$ starkli account oz init --keystore ./key_1 account_1
+$ starkli account oz init --keystore key_1.json account_1.json
 ```
 
 ### Once the account is initialized (still local for now), you must pre-fund this account.
@@ -39,7 +39,7 @@ of the gas fees to deploy your account, run the next step.
 ### To deploy the account, simply run:
 
 ```
-$ starkli account deploy account_1 --keystore ./key_1
+$ starkli account deploy account_1 --keystore key_1.json
 ```
 
 The prompt will be blocked to ensure that you press ENTER when your pre-fund transaction is validated.
@@ -114,7 +114,7 @@ It's important to note that the class hash depends on the contract's content. So
 tutorial, we recommend that you change at least some lines of code to generate a new class hash.
 
 ```bash
-$ starkli class-hash ./contract1.json
+$ starkli class-hash contract1.json
 
 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea
 ```
@@ -132,7 +132,7 @@ the code of the contract if you want to follow. Add a function, add an event (ev
 add a variable, etc...**
 
 ```bash
-$ starkli declare --watch --keystore key_1 --account account_1 contract1.json
+$ starkli declare --watch --keystore key_1.json --account account_1.json contract1.json
 
 Declaring Cairo 1 class: 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea
 Compiling Sierra class to CASM with compiler version v1.1.0...
@@ -171,7 +171,7 @@ $ starkli to-cairo-string starkli
 
 0x737461726b6c69
 
-$ starkli deploy --watch --keystore key_1 --account account_1 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea 0x737461726b6c69
+$ starkli deploy --watch --keystore key_1.json --account account_1.json 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea 0x737461726b6c69
 
 Deploying class 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea with salt 0x023815f8c5dba41d29bf6023568de206233e099bdd10fbac33f43eae89d4ec94...
 Contract deployment transaction: 0x05bdc93ef3e8050ca61c31039683906db67d67e3fdd41315f414a52dc16a3ab8
@@ -201,7 +201,7 @@ $ starkli to-cairo-string starknet
 
 0x737461726b6e6574
 
-$ starkli invoke --watch --keystore key_1 --account account_1 0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478 name_set 0x737461726b6e6574
+$ starkli invoke --watch --keystore key_1.json --account account_1.json 0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478 name_set 0x737461726b6e6574
 
 Invoke transaction: 0x06a9f49148992175694e5bb5a34a352d775059117fcf987d4478f7d0f729860c
 ```
