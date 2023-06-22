@@ -10,6 +10,7 @@ In Starkli, most of the commands are interacting with the blockchain,
 and thus require a provider to do so.
 
 ### JSON RPC provider
+
 To setup a node URL, you can set the `STARKNET_RPC` environment variable.
 Once set, you don't have to use `--rpc` argument in every and each command
 you use in order to interact with the blockchain.
@@ -32,6 +33,7 @@ $ starkli chain-id --rpc https://starknet-goerli.xxx
 ```
 
 ### Gateway
+
 In the current implementation, the Starknet gateway is also supported.
 The gateway is the address of a sequencer on a server, which is currently used
 to support the network before the total decentralization of Starknet.
@@ -43,9 +45,10 @@ provider once the gateway will be deprecated. So if you use both, you'll have a 
 at each command you run.
 
 Then, set `STARKNET_NETWORK` with one of the following values:
-* `mainnet`
-* `goerli-1`
-* `goerli-2`
+
+- `mainnet`
+- `goerli-1`
+- `goerli-2`
 
 ```
 $ export STARKNET_NETWORK=mainnet
@@ -56,7 +59,6 @@ $ starkli chain-id
 $ starkli chain-id --network goerli-1
 0x534e5f474f45524c49 (SN_GOERLI)
 ```
-
 
 ## Explicit accounts and wallets (signers)
 

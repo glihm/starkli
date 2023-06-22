@@ -52,7 +52,7 @@ When you run the command, you will be prompted to enter a password,
 used to encrypt your private key.
 
 ```
-Enter password: 
+Enter password:
 Created new encrypted keystore file: ~/.keystore/key_1
 Public key: 0x077efc5a30bdfe579af083c2f3297c52a0b675278431fea59b9a40421793809a
 ```

@@ -5,14 +5,14 @@ user. A user has to sign transactions in order to interact with the blockchain.
 
 Starkli proposes two ways to interact with the key pair:
 
-1. A managed and secure keystore based on [web3 secret storage definition](
-https://ethereum.org/en/developers/docs/data-structures-and-encoding/web3-secret-storage/)
-where the private key is strongly encrypted locally with a passphrase of your
-choice.
+1. A managed and secure keystore based on [web3 secret storage definition](https://ethereum.org/en/developers/docs/data-structures-and-encoding/web3-secret-storage/)
+   where the private key is strongly encrypted locally with a passphrase of your
+   choice.
 
 2. A raw generation of a key pair printed in the screen at generation.
 
 ## keystore
+
 Keystore management related commands. The keystore is a safe way to
 store your keys, and interact with them.
 
@@ -25,8 +25,9 @@ removal or loss.
 
 It's a good practice and safe to backup keystore files in several locations,
 as the private key inside the keystore file is encrypted.
-    
+
 ### new
+
 Randomly generate a new keystore.
 
 `starkli signer keystore new ~/.keystore/key_1`
@@ -50,6 +51,7 @@ Public key: 0x048cb21c13975711aae42cb20dfba9c20e5ff70f0429b55d35c79e2f8e8d5cf9
 ```
 
 ### from-key
+
 Create a keystore file from an existing private key.
 
 If you already have a private key, you can use this method to import
@@ -64,13 +66,14 @@ Note that the passphrase can be totally different from the passphrase
 you have used for the same private key, in other wallets.
 
 ```bash
-Enter private key: 
-Enter password: 
+Enter private key:
+Enter password:
 Created new encrypted keystore file: ~/.keystore/key_1
 Public key: 0x048cb21c13975711aae42cb20dfba9c20e5ff70f0429b55d35c79e2f8e8d5cf9
 ```
 
 ### inspect
+
 Check the public key of an existing keystore file.
 
 Prints to the screen the public key in the given keystore file.
@@ -83,11 +86,12 @@ You will be prompted to enter your passphrase, and the public key will be
 displayed.
 
 ```bash
-Enter password: 
+Enter password:
 Public key: 0x048cb21c13975711aae42cb20dfba9c20e5ff70f0429b55d35c79e2f8e8d5cf9
 ```
 
 ### inspect-private
+
 Check the private key of an existing keystore file.
 
 ```bash
@@ -98,7 +102,7 @@ As mentioned earlier, the private key is encrypted. Without your passphrase
 the signer software can't decrypt your private key.
 
 ```bash
-Enter password: 
+Enter password:
 Private key: 0x0546e02959e78748b0619ee1b19ccc5ae9592b12986037038e23d9f49ced1094
 ```
 

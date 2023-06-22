@@ -5,7 +5,6 @@ In this tutorial, you will be guided through two steps:
 1. How to import your existing keys from cairo-lang to starkli.
 2. Starkli 101 with a tutorial to interact with the blockchain.
 
-
 ## Prepare an account
 
 To interact with the blockchain, you need an account to sign transactions.
@@ -23,18 +22,19 @@ starkli signer keystore new ./key_1
 For more details about wallet and keys, please refere to [signer section](../subcommands/signer.md).
 
 2. Then, this key can be used to initialize an account. Take a moment to note the address
-of your account upon deploy, outputed by Starkli.
+   of your account upon deploy, outputed by Starkli.
 
 ```bash
 starkli account oz init --keystore ./key_1 account_1
 ```
 
 3. Once the account is initialized (still local for now), you must pre-fund this account.
-To pre-fund, you have several options, but the easiest is to pick-up one of Starknet wallet (ArgentX or Braavos), and from
-those wallets you can send funds to the address Starkli gave you at the previous command. If you want to have an estimate
-of the gas fees to deploy your account, run the next step.
+   To pre-fund, you have several options, but the easiest is to pick-up one of Starknet wallet (ArgentX or Braavos), and from
+   those wallets you can send funds to the address Starkli gave you at the previous command. If you want to have an estimate
+   of the gas fees to deploy your account, run the next step.
 
 4. To deploy the account, simply run:
+
 ```
 starkli account deploy account_1 --keystore ./key_1
 ```
@@ -42,7 +42,6 @@ starkli account deploy account_1 --keystore ./key_1
 The prompt will be blocked to ensure that you press ENTER when your pre-fund transaction is validated.
 Once you press ENTER, Starkli will show you the transaction hash related to your account deployment and will
 track the progress of the transaction.
-
 
 You are then all set, your cryptographic keys are generated and encrypted locally with your password.
 And your account is deployed on-chain, meaning that you can now start sending transaction!
@@ -54,6 +53,7 @@ For more details about accounts, please refere to [account section](../subcomman
 The next step is to compile a Cairo contract.
 
 To compile cairo contract you have several options:
+
 1. Use the compiler directly (with docker recommended). Please refer to [Starkware](https://github.com/starkware-libs/cairo)
    documentation if you want to install cairo compiler.
 2. Use [Scarb](https://docs.swmansion.com/scarb/docs), the cairo package manager.
@@ -61,7 +61,7 @@ To compile cairo contract you have several options:
 A simple contract to compile:
 
 ```rust
-// ** contract 1 **                                                                                                                                                
+// ** contract 1 **
 
 #[contract]
 mod Contract1 {
@@ -77,7 +77,7 @@ mod Contract1 {
     fn constructor(name: felt252) {
         _name::write(name);
     }
-                                                                                                                                                                   
+
     #[view]
     fn name_get() -> felt252 {
         let n = _name::read();

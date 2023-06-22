@@ -4,8 +4,7 @@ Calculate select from name.
 
 The selector is an identifier through which the function is callable in
 transactions or in other classes. The selector is the
-[starknet_keccak](
-https://docs.starknet.io/documentation/architecture_and_concepts/Hashing/hash-functions/#starknet-keccak)
+[starknet_keccak](https://docs.starknet.io/documentation/architecture_and_concepts/Hashing/hash-functions/#starknet-keccak)
 hash of the function name, encoded in ASCII.
 
 ```bash

@@ -31,11 +31,13 @@ $ starkli account oz init --keystore ./key_1 account_1
 ```
 
 ### Once the account is initialized (still local for now), you must pre-fund this account.
+
 To pre-fund, you have several options, but the easiest is to pick-up one of Starknet wallet (ArgentX or Braavos), and from
 those wallets you can send funds to the address Starkli gave you at the previous command. If you want to have an estimate
 of the gas fees to deploy your account, run the next step.
 
 ### To deploy the account, simply run:
+
 ```
 $ starkli account deploy account_1 --keystore ./key_1
 ```
@@ -54,6 +56,7 @@ For more details about accounts, please refere to [account section](../subcomman
 The next step is to compile a Cairo contract.
 
 To compile cairo contract you have several options:
+
 1. Use the compiler directly (with docker recommended). Please refer to [Starkware](https://github.com/starkware-libs/cairo)
    documentation if you want to install cairo compiler.
 2. Use [Scarb](https://docs.swmansion.com/scarb/docs), the cairo package manager.

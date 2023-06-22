@@ -5,10 +5,11 @@
 - [Getting started](./getting-started.md)
 - [Accounts and wallet](./accounts-wallets.md)
 
-# Tutorials 
+# Tutorials
+
 - [Starkli 101](./cairolang-tutos/starkli-101.md)
 
-# Subcommands 
+# Subcommands
 
 - [Subcommands](./subcommands/subcommands.md)
   - [selector](./subcommands/selector.md)

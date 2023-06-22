@@ -17,6 +17,7 @@ $ starkli deploy --watch \
 ```
 
 To only estimate the fees of this transaction, use `--estimate-only`:
+
 ```bash
 $ starkli deploy --estimate-only \
                  --keystore key_1 \

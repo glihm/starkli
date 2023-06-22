@@ -15,6 +15,7 @@ $ starkli declare --watch \
 ```
 
 To only estimate the fees of this transaction, use `--estimate-only`:
+
 ```bash
 $ starkli declare --estimate-only \
                   --keystore key_1 \
