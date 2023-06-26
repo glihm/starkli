@@ -7,7 +7,7 @@ name: Deploy mdBook site to Pages
 on:
   push:
     branches:
-      - master
+      - cairolang-and-book
     paths:
       - book/**
   workflow_dispatch:
