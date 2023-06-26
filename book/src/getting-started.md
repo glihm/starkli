@@ -75,3 +75,33 @@ If you have a local account used with `cairo-lang` which was the previous
 command line in python from Starkware, please take a look at
 [cairolang-import](./subcommands/cairolang-import.md)
 to easily import your account to Starkli in one command.
+
+
+## Enrivonment variables
+
+Starkli proposes a set of environment variables to ease the scripting
+and configuration.
+
+It's important to note that, even if environment variables are set,
+**passing an argument explicitely for a command will override the
+environment variable value**.
+
+```bash
+# RPC url for the node to be used.
+# Can be overriden with --rpc.
+# RPC will always takes precedence over network.
+export STARKNET_RPC=https://your@node.net
+
+# Network when gateway is used.
+# Can be overriden with --network.
+export STARKNET_NETWORK=goerli-1
+
+# Path to the account configuration file.
+# Can be overriden with --account.
+export STARKNET_ACCCOUNT=/path/to/account.json
+
+# Path to the keystore file.
+# Can be overriden with --keystore.
+export STARKNET_KEYSTORE=/path/to/keystore.json
+```
+
