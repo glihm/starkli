@@ -7,7 +7,7 @@
 
 # Tutorials
 
-- [Starkli 101](./cairolang-tutos/starkli-101.md)
+- [Starkli 101](./tutos/starkli-101.md)
 
 # Subcommands
 
