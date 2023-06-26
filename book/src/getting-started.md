@@ -76,7 +76,6 @@ command line in python from Starkware, please take a look at
 [cairolang-import](./subcommands/cairolang-import.md)
 to easily import your account to Starkli in one command.
 
-
 ## Enrivonment variables
 
 Starkli proposes a set of environment variables to ease the scripting
@@ -104,4 +103,3 @@ export STARKNET_ACCCOUNT=/path/to/account.json
 # Can be overriden with --keystore.
 export STARKNET_KEYSTORE=/path/to/keystore.json
 ```
-
