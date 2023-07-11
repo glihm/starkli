@@ -4,6 +4,7 @@
 
 - [Getting started](./getting-started.md)
 - [Accounts and wallet](./accounts-signers.md)
+- [Schemes](./schemes.md)
 
 # Tutorials
 

@@ -7,39 +7,61 @@ In this tutorial, you will be guided from scratch to deploy contracts on Starkne
 3. Declaring a new contract class on Starknet.
 4. Deploying an instance of a contract on Starknet.
 
-## Prepare an account
+## Prepare an account and a signer
 
 To interact with the blockchain, you need an account to sign transactions.
 This tutorial assumes that you have no wallet and no account setup.
 
-You may want to check [cairolang-import](../subcommands/cairolang-import.md)
-if you already have an account used with cairo-lang previously.
+### Initialize a signer
 
-### First, you need a pair of cryptographic keys.
+The signer is in charge of signing the transactions. You can create a new pair of
+cryptographic key, or importing an existing private key. More details in the
+[signer section](../subcommands/signer.md).
 
-```bash
-$ starkli signer keystore new key_1.json
-```
-
-For more details about wallet and keys, please refere to [signer section](../subcommands/signer.md).
-
-Then, this key can be used to initialize an account. Take a moment to note the address
-of your account upon deploy, outputed by Starkli.
+Let's create here a new signer.
 
 ```bash
-$ starkli account oz init --keystore key_1.json account_1.json
+$ starkli signer keystore new /path/to/key_1.json
 ```
+
+This will prompt you to enter a password and save your encrypted private key
+into the `key_1.json` file.
+
+Keystore is an other word to refer to the way your signer (keys) are stored.
+
+To then use this account at each command, you can export the environment variable such as:
+
+```bash
+$ export STARKNET_KEYSTORE=/path/to/key_1.json
+```
+
+We then initialize a new account, using OpenZeppelin class already declared on Starknet:
+
+```bash
+$ starkli account oz init /path/to/account_1.json
+```
+
+Note that we didn't need to pass the `--keystore` option if the `STARKNET_KEYSTORE` is already set.
+**Take note of your account address, we need then to pre-fund it.**
+
+Again, to avoid passing the account to each command of starkli, we can export
+the `STARKNET_ACCOUNT` variable.
 
 ### Once the account is initialized (still local for now), you must pre-fund this account.
 
 To pre-fund, you have several options, but the easiest is to pick-up one of Starknet wallet (ArgentX or Braavos), and from
-those wallets you can send funds to the address Starkli gave you at the previous command. If you want to have an estimate
-of the gas fees to deploy your account, run the next step.
+those wallets you can send funds to the address Starkli gave you at the previous command.
+
+Once some ETHs are sent to your account, proceed to the next step.
 
 ### To deploy the account, simply run:
 
+In this example, we pass explicitely the path to the `account_1.json`.
+You can rely on `STARKNET_ACCOUNT` environment variable, but for the deploy,
+it makes sense to explicitely defines which account we want to deploy.
+
 ```
-$ starkli account deploy account_1.json --keystore key_1.json
+$ starkli account deploy --account /path/to/account_1.json
 ```
 
 The prompt will be blocked to ensure that you press ENTER when your pre-fund transaction is validated.
@@ -51,12 +73,14 @@ And your account is deployed on-chain, meaning that you can now start sending tr
 
 For more details about accounts, please refere to [account section](../subcommands/account.md).
 
-From here, you can define environment variables to avoid passing explicitely your account and your
-keystore file at each command.
+From here, remember that you can define environment variables to avoid passing explicitely your account and your
+keystore file at each command. If you have a node, you can also define it here. If not, starkli
+will fallback on the gateway for now.
 
 ```bash
-$ export STARKNET_ACCOUNT=/path/account_1.json
-$ export STARKNET_KEYSTORE=/path/key_1.json
+$ export STARKNET_ACCOUNT=/path/to/account_1.json
+$ export STARKNET_KEYSTORE=/path/to/key_1.json
+$ export STARKNET_RPC=https://my.node.starknet
 ```
 
 From here, Starkli will automatically load those files.
@@ -71,67 +95,71 @@ To compile cairo contract you have several options:
 
 1. Use the compiler directly (with docker recommended). Please refer to [Starkware](https://github.com/starkware-libs/cairo)
    documentation if you want to install cairo compiler.
-2. Use [Scarb](https://docs.swmansion.com/scarb/docs), the cairo package manager.
+2. Use [Scarb](https://docs.swmansion.com/scarb/docs), the cairo package manager, which is easy to configure.
 
 A simple contract to compile:
 
 ```rust
 // ** contract1.cairo **
 
-#[contract]
-mod Contract1 {
+#[starknet::interface]
+trait MyContractInterface<T> {
+    fn name_get(self: @T) -> felt252;
+    fn name_set(ref self: T, name: felt252);
+}
 
+#[starknet::contract]
+mod contract1 {
+
+    #[storage]
     struct Storage {
-        _name: felt252,
+        name: felt252,
     }
 
     #[event]
-    fn NameGreeted(name: felt252) {}
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        NameChanged: NameChanged,
+    }
 
-    #[event]
-    fn NameChanged(previous: felt252, current: felt252) {}
+    #[derive(Drop, starknet::Event)]
+    struct NameChanged {
+        previous: felt252,
+        current: felt252,
+    }
 
     #[constructor]
-    fn constructor(name: felt252) {
-        _name::write(name);
+    fn constructor(ref self: ContractState, name: felt252) {
+        self.name.write(name);
     }
 
-    #[view]
-    fn name_get() -> felt252 {
-        let n = _name::read();
-        NameGreeted(n);
-        n
-    }
+    #[external(v0)]
+    impl Contract1 of super::MyContractInterface<ContractState> {
+        ///
+        fn name_get(self: @ContractState) -> felt252 {
+            self.name.read()
+        }
 
-    #[external]
-    fn name_set(name: felt252) {
-        let previous = _name::read();
-        _name::write(name);
-        NameChanged(previous, name);
+        ///
+        fn name_set(ref self: ContractState, name: felt252) {
+            let previous = self.name.read();
+            self.name.write(name);
+            self.emit(NameChanged{ previous, current: name });
+        }
     }
-
 }
 ```
 
-Let's give an example with only docker required on your machine:
+To compile the contract, you can use [scarb](https://docs.swmansion.com/scarb).
 
+Ensure that into the `Scarb.toml` you have a dependency matching your scarb version.
+For instance `starknet="2.0.1"` for a scarb version like:
 ```
-$ sudo docker run --rm -it -v $(pwd):/cairo --entrypoint starknet-compile starknet/cairo:1.1.0 /cairo/contract1.cairo /cairo/contract1.json --replace-ids
+scarb --version
+
+scarb 0.5.1 (798acce7f 2023-07-05)
+cairo: 2.0.1 (https://crates.io/crates/cairo-lang-compiler/2.0.1)
 ```
-
-If you are not familiar with docker, you can check Scarb documentation, and run `scarb build`.
-
-Once the contract is compiled into Sierra (the `.json` file), we need it's class hash.
-It's important to note that the class hash depends on the contract's content. So if you are doing this
-tutorial, we recommend that you change at least some lines of code to generate a new class hash.
-
-```bash
-$ starkli class-hash contract1.json
-
-0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea
-```
-
-This will output the class hash of your compiled contract.
 
 ## Declare the new class
 
@@ -144,20 +172,10 @@ the code of the contract if you want to follow. Add a function, add an event (ev
 add a variable, etc...**
 
 ```bash
-$ starkli declare --watch contract1.json
-
-Declaring Cairo 1 class: 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea
-Compiling Sierra class to CASM with compiler version v1.1.0...
-CASM class hash: 0x0339b10696de96d2b921f3f19c1af4bc95750ed6cb6b058f938fe73556879d95
-Contract declaration transaction: 0x072cd111c4a57886dc168c16e2643eac58798bbf23324575bf03725d2d84f94d
-Waiting for transaction 0x072cd111c4a57886dc168c16e2643eac58798bbf23324575bf03725d2d84f94d to confirm...
-Transaction not confirmed yet...
-Transaction 0x072cd111c4a57886dc168c16e2643eac58798bbf23324575bf03725d2d84f94d confirmed
-Class hash declared:
-0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea
+$ starkli declare --watch ./target/dev/contract1.json
 ```
 
-Starkli will then output the Cairo 1 class hash (the one we can see with the previous `class-hash` command),
+Starkli will then output the Cairo 1 class hash (which can also be retrived using `starkli class-hash <FILE.json>` command),
 but also the transaction associated with the declare. You can use still use the `--watch` option from Starkli,
 or monitor your transaction on an explorer with the `transaction hash`.
 
@@ -177,48 +195,38 @@ constructor arguments but the contract is expecting some, you'll have a beautifu
 If your arguments are felts, and you are using short strings, Starkli has a tool for that using [to-cairo-string](../subcommands/to-cairo-string.md).
 
 In the case of `contract1`, let's use a string to initialize the constructor with a name: `starkli`.
+To work with short strings, starkli proposes some `schemes`, which will handle the serialization
+of arguments for you: `str:starkli`.
+
+More about schemes [here](../schemes.md).
+
+This will automatically generate the underlying felt you can obtain using [to-cairo-string](../subcommands/to-cairo-string.md).
 
 ```bash
-$ starkli to-cairo-string starkli
+$ starkli class-hash ./target/dev/contract1.json
+0x068f2d2fce1d69bd9469d9364d0e64225ea58e6e209737f8473eb33c941dabb1
 
-0x737461726b6c69
-
-$ starkli deploy --watch 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea 0x737461726b6c69
-
-Deploying class 0x0392d83f853eb1b6f57aa7de4e9dc8ffc660239ff2ecb1fb8a9749ef0d36a2ea with salt 0x023815f8c5dba41d29bf6023568de206233e099bdd10fbac33f43eae89d4ec94...
-Contract deployment transaction: 0x05bdc93ef3e8050ca61c31039683906db67d67e3fdd41315f414a52dc16a3ab8
+$ starkli deploy --watch 0x068f2d2fce1d69bd9469d9364d0e64225ea58e6e209737f8473eb33c941dabb1 str:starkli
 ```
 
-And once the transaction is confirmed, check the deployment transaction on the explorer to access the deployed address of your contract.
+In the output of this command, starkli will give you the transaction hash and also the address where the
+contract will be deployed.
 
-You'll aslo be able to interact with this contract using it's `view` called `name_get` directly with Starkli:
+Let's then interact with the contract with `call` and `invoke`.
 
 ```bash
-$ starkli call 0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478 name_get
-
+$ starkli call 0x06734d6f8209f96c6bafec231a738b967926b00095f29dec141e64620c5ff929 name_get
 [
     "0x00000000000000000000000000000000000000000000000000737461726b6c69"
 ]
 
 
 $ starkli parse-cairo-string 0x00000000000000000000000000000000000000000000000000737461726b6c69
-
 starkli
-```
 
-If you want to execute a transaction to call an external, you can achieve it using the `invoke` command:
-
-```bash
-$ starkli to-cairo-string starknet
-
-0x737461726b6e6574
-
-$ starkli invoke --watch 0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478 name_set 0x737461726b6e6574
-
-Invoke transaction: 0x06a9f49148992175694e5bb5a34a352d775059117fcf987d4478f7d0f729860c
+$ starkli invoke --watch 0x06734d6f8209f96c6bafec231a738b967926b00095f29dec141e64620c5ff929 name_set str:starknet
 ```
 
 If you prefer the explorer mode, you can use
-[starkscan](https://testnet.starkscan.co/contract/0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478#read-write-contract-sub-read)
-or
-[voyager](https://goerli.voyager.online/contract/0x0259ae94e14641568687da0a42611f648ce16b9a08159488561d6a66250c0478#readContract).
+[voyager](https://goerli.voyager.online/contract/0x06734d6f8209f96c6bafec231a738b967926b00095f29dec141e64620c5ff929#readContract) or
+[starkscan](https://testnet.starkscan.co/contract/0x06734d6f8209f96c6bafec231a738b967926b00095f29dec141e64620c5ff929#read-write-contract-sub-read).

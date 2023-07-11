@@ -97,6 +97,7 @@ export STARKNET_NETWORK=goerli-1
 
 # Path to the account configuration file.
 # Can be overriden with --account.
+# You don't need this one if STARKNET_RPC is set.
 export STARKNET_ACCCOUNT=/path/to/account.json
 
 # Path to the keystore file.
