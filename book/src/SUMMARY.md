@@ -3,7 +3,7 @@
 [Starkli](./title-page.md)
 
 - [Getting started](./getting-started.md)
-- [Accounts and wallet](./accounts-wallets.md)
+- [Accounts and wallet](./accounts-signers.md)
 
 # Tutorials
 
