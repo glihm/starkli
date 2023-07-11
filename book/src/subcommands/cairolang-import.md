@@ -1,5 +1,7 @@
 # Cairolang import
 
+**IMPORTANT: this command is not merged yet**
+
 Imports a private key and an associated account contract from
 `cairo-lang` configuration file.
 
